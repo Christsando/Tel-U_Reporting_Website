@@ -42,14 +42,23 @@ class LostFoundItemController extends Controller
             'image'       => 'nullable|image|max:2048',
         ]);
 
+        
         if ($request->hasFile('image')) {
-            $path = $request -> file('image')-> store('lost-found-images', 'public');
-            $validated['image'] = $path ;
 
-            //$iagePath = $request->file('image')->store('items', 'public');
-            //$itemsData['image'] = $imagePath;
+            if (isset($lostFoundItem) && $lostFoundItem->image) {
+                Storage::disk('public')->delete($lostFoundItem->image);
+            }
+
+            $file = $request->file('image');
+
+            $extension = strtolower($file->getClientOriginalExtension());
+
+            $filename = time() . '_' . uniqid() . '.' . $extension;
+
+            $file->storeAs('lost-found-images', $filename, 'public');
+
+            $validated['image'] = 'lost-found-images/' . $filename;
         }
-
         $validated['user_id']=Auth::id();
         LostFoundItem::create($validated);
         return redirect()->route('lost-found.index') -> with('success', 'Laporan berhasil dibuat !');
@@ -70,9 +79,6 @@ class LostFoundItemController extends Controller
     public function edit($id)
     {
         $lostFoundItem = LostFoundItem::findOrFail($id);
-        if ($lostFoundItem->user_id !== Auth::id()){
-            
-        }
         return view('frontend.lost-found.edit', compact('lostFoundItem'));
     }
 
@@ -88,55 +94,53 @@ class LostFoundItemController extends Controller
         $lostFoundItem = LostFoundItem::findOrFail($id);
         $validated = $request->validate([
             'title'       => 'required|string|max:100',
-            'description' => 'required|string|min:10',
-            'location'    => 'required|string|max:150',
+            'description' => 'required|string',
+            'location'    => 'required|string',
             'type'        => 'required|in:LOST,FOUND',
             'status'      => 'required|in:OPEN,CLAIMED,RESOLVED',
             'date_event'  => 'required|date',
             'image'       => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            if ($lostFoundItem-> image){
-                Storage::disk('public')-> delete($lostFoundItem-> image);
+      if ($request->hasFile('image')) {
+
+            if (isset($lostFoundItem) && $lostFoundItem->image) {
+                Storage::disk('public')->delete($lostFoundItem->image);
             }
-            $path = $request -> file('image')-> store('lost-found-images', 'public');
-            $validated['image'] = $path ;
+
+            $file = $request->file('image');
+
+            $extension = strtolower($file->getClientOriginalExtension());
+
+            $filename = time() . '_' . uniqid() . '.' . $extension;
+
+            $file->storeAs('lost-found-images', $filename, 'public');
+
+            $validated['image'] = 'lost-found-images/' . $filename;
         }
 
-        //$lostFoundItem->update($validated);
-        $lostFoundItem->title       = $validated['title'];
-        $lostFoundItem->description = $validated['description'];
-        $lostFoundItem->location    = $validated['location'];
-        $lostFoundItem->type        = $validated['type'];
-        $lostFoundItem->status      = $validated['status'];
-        $lostFoundItem->date_event  = $validated['date_event'];
+        
 
-        if (isset($validated['image'])) {
-            $lostFoundItem->image = $validated['image'];
-        }
+        $lostFoundItem->update($validated);
 
-        $lostFoundItem->save();
-
-        return redirect()->route('lost-found.index')
-            ->with('success', 'Data Lost & Found berhasil diperbarui');
+        return redirect()->route('lost-found.index')->with('success', 'Data Lost & Found berhasil diperbarui');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(LostFoundItem $lostFoundItem)
+    public function destroy($id)
     {
 
         /* if ($lostFoundItem->user_id !== Auth::id()&& Auth::user()->role !== 'admin') {
             abort(403);
         }*/
+        $lostFoundItem = LostFoundItem::findOrFail($id);
         if ($lostFoundItem-> image){
-            Storage::disk('public')-> delete($lostFoundItem-> image);
+            Storage::disk('public')->delete($lostFoundItem-> image);
         }
         $lostFoundItem-> delete();
-        return redirect()->route('lost-found.index')
-            ->with('success', 'Data Lost & Found berhasil dihapus');
+        return redirect()->route('lost-found.index')->with('success', 'Data Lost & Found berhasil dihapus');
     }
     
 
