@@ -50,13 +50,9 @@ class LostFoundItemController extends Controller
             }
 
             $file = $request->file('image');
-
             $extension = strtolower($file->getClientOriginalExtension());
-
             $filename = time() . '_' . uniqid() . '.' . $extension;
-
             $file->storeAs('lost-found-images', $filename, 'public');
-
             $validated['image'] = 'lost-found-images/' . $filename;
         }
         $validated['user_id']=Auth::id();
