@@ -3,7 +3,10 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LostFoundItemController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReportController;
 
+
+Route::resource('reports', ReportController::class)->middleware('auth');
 Route::get('/', function () {
     return view('welcome');
 });
