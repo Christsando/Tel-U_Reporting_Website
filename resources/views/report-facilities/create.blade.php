@@ -42,7 +42,7 @@
                     <div style="margin-top: 20px; text-align: right;"> <button type="submit" style="background-color: #2563eb; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; border: none;">
                             Kirim Laporan
                         </button>
-                    </div>
+                    </div> 
 
                 </form>
             </div>
