@@ -5,6 +5,7 @@ use App\Http\Controllers\LostFoundItemController;
 use App\Http\Controllers\AspirationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Admin\AdminResponseController;
 
 
 Route::resource('reports', ReportController::class)->middleware('auth');
