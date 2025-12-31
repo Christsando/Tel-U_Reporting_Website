@@ -4,7 +4,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LostFoundItemController;
 use App\Http\Controllers\AspirationController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReportController;
 
+
+Route::resource('reports', ReportController::class)->middleware('auth');
 Route::get('/', function () {
     return view('welcome');
 });
@@ -21,8 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
-
-
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::resource('responses', AdminResponseController::class);
+});
 
 require __DIR__.'/auth.php';
