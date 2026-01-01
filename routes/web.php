@@ -8,9 +8,11 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Admin\AdminResponseController;
 
 
-Route::resource('reports', ReportController::class)->middleware('auth');
 Route::get('/', function () {
     return view('welcome');
+});
+Route::get('/admin', function () {
+    return view('auth.admin-login');
 });
 
 Route::get('/dashboard', function () {
@@ -18,6 +20,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::resource('reports', ReportController::class);
     Route::resource('lost-found', LostFoundItemController::class);
     Route::resource('aspirations', AspirationController::class);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -11,12 +11,12 @@ class ReportController extends Controller
     public function index()
     {
         $reports = Report::latest()->get();
-        return view('reports.index', compact('reports'));
+        return view('report-facilities.index', compact('reports'));
     }
 
     public function create()
     {
-        return view('reports.create');
+        return view('report-facilities.create');
     }
 
     public function store(Request $request)
@@ -43,7 +43,7 @@ class ReportController extends Controller
 
     public function edit(Report $report)
     {
-        return view('reports.edit', compact('report'));
+        return view('report-facilities.edit', compact('report'));
     }
 
     public function update(Request $request, Report $report)
