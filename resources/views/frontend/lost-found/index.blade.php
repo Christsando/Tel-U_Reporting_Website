@@ -71,6 +71,7 @@
                         </p>
                     </div>
 
+                    @if (Auth::id()=== $item->user_id || Auth::user()->role ==='admin')
                     <div class="p-4 border-t bg-gray-50 flex justify-between items-center">
                         <a href="{{ route('lost-found.edit', $item->id) }}" class="text-yellow-600 hover:text-yellow-800 font-semibold text-sm flex items-center">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -86,6 +87,11 @@
                             </button>
                         </form>
                     </div>
+                    @else
+                    <div class="p-4 boder-t bg-gray-50 text-center text-xs text-gray=400">
+                    Milik: {{ $item->user->name ?? 'User Lain' }}
+                    </div>
+                    @endif
                 </div>
                 @empty
                 <div class="col-span-full text-center py-12">

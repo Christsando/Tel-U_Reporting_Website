@@ -88,6 +88,9 @@ class LostFoundItemController extends Controller
             abort(403);
         }*/
         $lostFoundItem = LostFoundItem::findOrFail($id);
+        if ($lostFoundItem->user_id !== Auth::id()&&Auth::user()->role!=='admin' ){
+            abort(403,'tidak bisa edit');
+        }
         $validated = $request->validate([
             'title'       => 'required|string|max:100',
             'description' => 'required|string',
@@ -132,6 +135,11 @@ class LostFoundItemController extends Controller
             abort(403);
         }*/
         $lostFoundItem = LostFoundItem::findOrFail($id);
+        if ($lostFoundItem->user_id !== Auth::id()){
+            if(Auth::user()->role!=='admin' ){
+            abort(403,'tidak bisa hapus');
+        }
+        }
         if ($lostFoundItem-> image){
             Storage::disk('public')->delete($lostFoundItem-> image);
         }
