@@ -66,8 +66,8 @@ class LostFoundItemController extends Controller
      */
     public function show($id)
     {
-        $item = LostFoundItem::findOrFail($id);
-        return view('frontend.lost-found.show', compact('items'));
+        // $item = LostFoundItem::findOrFail($id);
+        // return view('frontend.lost-found.show', compact('items'));
     }
 
     /**

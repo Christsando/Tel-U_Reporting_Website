@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false }" class="bg-white border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -14,6 +14,15 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('lost-found.index')" :active="request()->routeIs('lost-found.*')">
+                        {{ __('Lost and Found') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
+                        {{ __('Reporting') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('aspirations.index')" :active="request()->routeIs('aspirations.*')">
+                        {{ __('Aspiration') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -35,7 +44,11 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            <i class="fas fa-user mr-1"></i> {{ __('Profile') }}
+                        </x-dropdown-link>
+                        
+                        <x-dropdown-link :href="route('point-shop.index')">
+                            <i class="fa-solid fa-coins mr-1"></i> {{ __('Points') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -45,7 +58,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                <i class="fa-solid fa-right-from-bracket mr-1"></i> {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>

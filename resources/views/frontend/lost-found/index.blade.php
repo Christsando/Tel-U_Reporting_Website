@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-              Barang Hilang & Ditemukan
+                Barang Hilang & Ditemukan
             </h2>
             <div class="flex gap-3">
             <a href="{{ route('messages.index') }}" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded shadow flex items-center transition duration-300">
@@ -22,7 +22,7 @@
         </div>
     </x-slot>
 
-    <div class="py-12 bg-gray-100 min-h-screen">
+    <div class="py-6 bg-gray-100 min-h-screen lg:min-h-[500px]">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
             @if(session('success'))
@@ -131,7 +131,7 @@
             <div class="mt-6">
                 {{ $items->links() }}
             </div>
-
         </div>
     </div>
+    <x-footer/>
 </x-app-layout>
