@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\LostFoundItem;
+use App\Models\Message;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
@@ -121,8 +122,14 @@ class LostFoundItemController extends Controller
         
 
         $lostFoundItem->update($validated);
+        if ($request->status === 'RESOLVED') {
+            Message::where('lost_found_item_id', $id)->delete();
 
-        return redirect()->route('lost-found.index')->with('success', 'Data Lost & Found berhasil diperbarui');
+            $pesan_tambahan = ' Dan riwayat percakapan telah dihapus otomatis.';
+        } else {
+            $pesan_tambahan = '';
+        }
+        return redirect()->route('lost-found.index')->with('success', 'Data Lost & Found berhasil diperbarui'. $pesan_tambahan);
     }
 
     /**
