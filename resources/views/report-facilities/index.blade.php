@@ -5,7 +5,7 @@
                 {{ __('Daftar Laporan Fasilitas') }}
             </h2>
             <a href="{{ route('reports.create') }}"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg transition duration-300">
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow transition">
                 + Buat Laporan Baru
             </a>
         </div>
@@ -14,70 +14,96 @@
     <div class="py-6 bg-gray-100 min-h-screen lg:min-h-[500px]">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-
             @if (session('success'))
-                <div
-                    style="background-color: #d1e7dd; color: #0f5132; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+                <div class="mb-6 rounded-lg bg-green-100 text-green-800 px-4 py-3">
                     {{ session('success') }}
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <table style="width: 100%; border-collapse: collapse;">
+            <div class="bg-white shadow-sm sm:rounded-lg p-6 overflow-x-auto">
+                <table class="w-full border-collapse">
                     <thead>
-                        <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-                            <th style="padding: 12px; text-align: left;">Foto</th>
-                            <th style="padding: 12px; text-align: left;">Judul</th>
-                            <th style="padding: 12px; text-align: left;">Lokasi</th>
-                            <th style="padding: 12px; text-align: left;">Status</th>
-                            <th style="padding: 12px; text-align: left;">Lainnya</th>
+                        <tr class="bg-gray-100 border-b-2 border-gray-200 text-left">
+                            <th class="px-4 py-3">Foto</th>
+                            <th class="px-4 py-3">Judul</th>
+                            <th class="px-4 py-3">Lokasi</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3">Lainnya</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-gray-200">
                         @forelse($reports as $report)
-                            <tr style="border-bottom: 1px solid #dee2e6;">
-                                <td style="padding: 12px;">
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-4 py-3">
                                     @if ($report->image)
                                         <img src="{{ asset('storage/' . $report->image) }}" alt="Bukti"
-                                            style="width: 100px; height: auto; border-radius: 5px;">
+                                            class="w-24 rounded-md object-cover">
                                     @else
-                                        <span style="color: gray; font-size: 0.8em;">Tidak ada foto</span>
+                                        <span class="text-gray-400 text-sm">Tidak ada foto</span>
                                     @endif
                                 </td>
 
-                                <td style="padding: 12px;">
-                                    <strong>{{ $report->title }}</strong><br>
-                                    <small style="color: #666;">{{ $report->description }}</small>
+                                <td class="px-4 py-3">
+                                    <p class="font-semibold text-gray-800">
+                                        {{ $report->title }}
+                                    </p>
+                                    <p class="text-sm text-gray-500">
+                                        {{ $report->description }}
+                                    </p>
                                 </td>
-                                <td style="padding: 12px;">{{ $report->location }}</td>
-                                <td style="padding: 12px;">
+
+                                <td class="px-4 py-3 text-gray-700">
+                                    {{ $report->location }}
+                                </td>
+
+                                <td class="px-4 py-3">
                                     <span
-                                        style="background-color: #eee; padding: 5px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold;">
+                                        class="inline-block px-3 py-1 text-xs font-semibold rounded-full
+                                        @if ($report->status === 'pending') bg-yellow-100 text-yellow-800
+                                        @elseif($report->status === 'proses') bg-blue-100 text-blue-800
+                                        @elseif($report->status === 'selesai') bg-green-100 text-green-800
+                                        @else bg-gray-100 text-gray-800 @endif">
                                         {{ $report->status }}
                                     </span>
                                 </td>
-                                <td style="padding: 12px;">
-                                    <a href="{{ route('reports.edit', $report->id) }}"
-                                        style="color: blue; margin-right: 10px; text-decoration: none; font-weight: bold;">Edit</a>
-                                    <form action="{{ route('reports.destroy', $report->id) }}" method="POST"
-                                        style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            style="color: red; background: none; border: none; font-weight: bold; cursor: pointer;"
-                                            onclick="return confirm('Yakin mau hapus?')">Hapus</button>
-                                    </form>
+
+                                <td class="px-4 py-3 align-middle">
+                                    @if (auth()->id() === $report->user_id)
+                                        <div class="flex items-center justify-start gap-3">
+                                            <a href="{{ route('reports.edit', $report->id) }}"
+                                                class="text-yellow-600 hover:text-yellow-800 font-semibold text-sm flex items-center">
+                                                <i class="fas fa-edit mr-1"></i> Edit
+                                            </a>
+
+                                            <form action="{{ route('reports.destroy', $report->id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="text-red-600 hover:text-red-800 font-semibold text-sm flex items-center"
+                                                    onclick="return confirm('Yakin mau hapus?')">
+                                                    <i class="fas fa-trash mr-1"></i> Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @else
+                                        <span class="text-gray-400 text-sm italic">—</span>
+                                    @endif
                                 </td>
+
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" style="text-align: center; padding: 20px;">Belum ada laporan.</td>
+                                <td colspan="5" class="text-center py-6 text-gray-500">
+                                    Belum ada laporan.
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
         </div>
     </div>
+
     <x-footer />
 </x-app-layout>

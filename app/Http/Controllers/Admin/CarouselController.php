@@ -59,7 +59,6 @@ class CarouselController extends Controller
     }
 
 
-
     public function toggleStatus(Carousel $carousel)
     {
         $carousel->update([

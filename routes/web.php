@@ -8,6 +8,8 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Admin\AdminResponseController;
 use App\Http\Controllers\Admin\CarouselController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\AdminPointsController;
+use App\Http\Controllers\PointsController;
 
 Route::get('/', function () {return view('welcome');});
 
@@ -23,17 +25,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::delete('/points', [ProfileController::class, 'index'])->name('point-shop.index');
+    Route::get('/points', [PointsController::class, 'index'])->name('point-shop.index');
+    Route::patch('/points/{point}/exchange', [PointsController::class, 'exchange'])->name('points.exchange');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('responses', AdminResponseController::class);
-    Route::get('/carousel', [CarouselController::class, 'index'])->name('carousel.index');
-    Route::get('/carousel/create', [CarouselController::class, 'create'])->name('carousel.create');
+    // Route::get('/carousel', [CarouselController::class, 'index'])->name('carousel.index');
+    // Route::get('/carousel/create', [CarouselController::class, 'create'])->name('carousel.create');
+    // Route::post('/carousel', [CarouselController::class, 'store'])->name('carousel.store');
+    // Route::put('/carousel/{carousel}', [CarouselController::class, 'update'])->name('carousel.update');
+    // Route::delete('/carousel/{carousel}', [CarouselController::class, 'destroy'])->name('carousel.destroy');
+    Route::resource('carousel', CarouselController::class);
+    Route::resource('points', AdminPointsController::class);
+    Route::patch('/points/{points}/toggle', [AdminPointsController::class, 'toggleStatus'])->name('points.toggle');
     Route::patch('/carousel/{carousel}/toggle', [CarouselController::class, 'toggleStatus'])->name('admin.carousel.toggle');
-    Route::post('/carousel', [CarouselController::class, 'store'])->name('carousel.store');
-    Route::put('/carousel/{carousel}', [CarouselController::class, 'update'])->name('carousel.update');
-    Route::delete('/carousel/{carousel}', [CarouselController::class, 'destroy'])->name('carousel.destroy');
 });
 
 require __DIR__.'/auth.php';
