@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('carousel.index')" :active="request()->routeIs('carousel.index')">
                         {{ __('Image Carousel') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('points.index')" :active="request()->routeIs('points.index')">
+                        {{ __('Gamification') }}
+                    </x-nav-link>
                 </div>
             </div>
 

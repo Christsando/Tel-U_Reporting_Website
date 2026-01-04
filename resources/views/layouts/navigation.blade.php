@@ -21,7 +21,7 @@
                     <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
                         {{ __('Reporting') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('point-shop.index')" :active="request()->routeIs('aspirations.*')">
+                    <x-nav-link :href="route('aspirations.index')" :active="request()->routeIs('aspirations.*')">
                         {{ __('Aspiration') }}
                     </x-nav-link>
                 </div>
@@ -47,7 +47,7 @@
                             <i class="fas fa-user mr-1"></i> {{ __('Profile') }}
                         </x-dropdown-link>
                         
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('point-shop.index')">
                             <i class="fa-solid fa-coins mr-1"></i> {{ __('Points') }}
                         </x-dropdown-link>
 
