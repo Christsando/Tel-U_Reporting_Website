@@ -12,17 +12,14 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('lost-found.index')" :active="request()->routeIs('lost-found.*')">
-                        {{ __('Lost and Found') }}
-                    </x-nav-link>
                     <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
                         {{ __('Reporting') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('point-shop.index')" :active="request()->routeIs('aspirations.*')">
+                    <x-nav-link :href="route('aspirations.index')" :active="request()->routeIs('aspirations.*')">
                         {{ __('Aspiration') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('carousel.index')" :active="request()->routeIs('carousel.index')">
+                        {{ __('Image Carousel') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -47,10 +44,6 @@
                             <i class="fas fa-user mr-1"></i> {{ __('Profile') }}
                         </x-dropdown-link>
                         
-                        <x-dropdown-link :href="route('profile.edit')">
-                            <i class="fa-solid fa-coins mr-1"></i> {{ __('Points') }}
-                        </x-dropdown-link>
-
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
