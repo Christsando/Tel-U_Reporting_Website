@@ -12,14 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('admin_responses', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('admin_id')->constrained('users');
-    $table->morphs('respondable'); // respondable_id & respondable_type
-    $table->text('message');
-    $table->string('action_status')->nullable();
-    $table->timestamps();
-});
-
+            $table->id();
+            $table->foreignId('admin_id')->constrained('users');
+            $table->morphs('respondable'); // respondable_id & respondable_type
+            $table->text('message');
+            $table->string('action_status')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**

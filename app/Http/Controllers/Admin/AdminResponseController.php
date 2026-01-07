@@ -5,18 +5,43 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AdminResponse;
+use App\Models\Aspiration;
+use App\Models\Report;
 
 class AdminResponseController extends Controller
 {
     public function index()
     {
-        $responses = AdminResponse::with('respondable', 'admin')
-            ->latest()
-            ->paginate(10);
+        $reports = Report::select(
+            'id',
+            'title',
+            'description as message',
+            'status',
+            'created_at'
+        )->get()->map(function ($item) {
+            $item->source = 'report';
+            return $item;
+        });
 
-        return view('admin.responses.index', compact('responses'));
+        $aspirations = Aspiration::select(
+            'id',
+            'title',
+            'content as message',
+            'status',
+            'created_at'
+        )->get()->map(function ($item) {
+            $item->source = 'aspiration';
+            return $item;
+        });
+
+        $items = collect()
+            ->concat($reports)
+            ->concat($aspirations);
+
+        return view('admin.responses.index', compact('items'));
     }
-    
+
+
     public function create(Request $request)
     {
         return view('admin.responses.create', [
@@ -27,15 +52,41 @@ class AdminResponseController extends Controller
 
     public function store(Request $request)
     {
-        AdminResponse::create([
-            'admin_id'         => auth()->id(),
-            'respondable_type' => $request->respondable_type,
-            'respondable_id'   => $request->respondable_id,
-            'message'          => $request->message,
-            'action_status'    => $request->action_status,
+        $request->validate([
+            'type'   => 'required|in:report,aspiration',
+            'id'     => 'required|integer',
+            'status' => 'required|in:PENDING,ACCEPTED,ONPROGRESS,DONE,REJECTED',
+            'message' => 'required|string',
         ]);
 
-        return redirect()->route('responses.index');
+        // tentukan data mana yang direspon
+        if ($request->type === 'report') {
+            $item = Report::findOrFail($request->id);
+        } else {
+            $item = Aspiration::findOrFail($request->id);
+        }
+
+        // update status di tabel ASLI (penting)
+        $item->update([
+            'status' => $request->status
+        ]);
+
+        AdminResponse::updateOrCreate(
+            [
+                'respondable_type' => get_class($item),
+                'respondable_id'   => $item->id,
+            ],
+            [
+                'admin_id'      => auth()->id(),
+                'message'       => $request->message,
+                'action_status' => $request->status,
+            ]
+        );
+
+
+        return redirect()
+            ->route('responses.index')
+            ->with('success', 'Respon admin berhasil disimpan');
     }
 
     public function edit(AdminResponse $response)
@@ -49,8 +100,16 @@ class AdminResponseController extends Controller
         return redirect()->route('responses.index');
     }
 
-    public function show(AdminResponse $response)
+    public function show($recognize)
     {
-        return view('admin.responses.show', compact('response'));
+        [$type, $id] = explode('-', $recognize);
+
+        if ($type === 'report') {
+            $item = Report::findOrFail($id);
+        } else {
+            $item = Aspiration::findOrFail($id);
+        }
+
+        return view('admin.responses.show', compact('item', 'type'));
     }
 }
