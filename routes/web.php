@@ -10,12 +10,10 @@ use App\Http\Controllers\Admin\CarouselController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\AdminPointsController;
 use App\Http\Controllers\PointsController;
+use App\Http\Controllers\MessageController;
 
 Route::get('/', function () {return view('welcome');});
-
 Route::get('/admin/login', function () {return view('auth.admin-login');})->name('admin.login');
-
-Route::get('/dashboard', function () {return view('dashboard');})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -34,11 +32,6 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('responses', AdminResponseController::class);
-    // Route::get('/carousel', [CarouselController::class, 'index'])->name('carousel.index');
-    // Route::get('/carousel/create', [CarouselController::class, 'create'])->name('carousel.create');
-    // Route::post('/carousel', [CarouselController::class, 'store'])->name('carousel.store');
-    // Route::put('/carousel/{carousel}', [CarouselController::class, 'update'])->name('carousel.update');
-    // Route::delete('/carousel/{carousel}', [CarouselController::class, 'destroy'])->name('carousel.destroy');
     Route::resource('carousel', CarouselController::class);
     Route::resource('points', AdminPointsController::class);
     Route::patch('/points/{points}/toggle', [AdminPointsController::class, 'toggleStatus'])->name('points.toggle');

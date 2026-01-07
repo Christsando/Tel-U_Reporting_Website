@@ -18,7 +18,13 @@ return new class extends Migration
             $table->text('content');
             $table->string('topic');
             $table->boolean('is_anonymous')->default(false);
-            $table->enum('status', ['submitted', 'reviewed', 'accepted', 'rejected'])->default('submitted');
+            $table->enum('status', [
+                'PENDING',
+                'ACCEPTED',
+                'ONPROGRESS',
+                'DONE',
+                'REJECTED'
+            ])->default('PENDING');
             $table->text('admin_response')->nullable();
             $table->timestamps();
         });

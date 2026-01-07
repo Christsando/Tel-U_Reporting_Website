@@ -12,11 +12,8 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
-                        {{ __('Reporting') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('aspirations.index')" :active="request()->routeIs('aspirations.*')">
-                        {{ __('Aspiration') }}
+                    <x-nav-link :href="route('responses.index')" :active="request()->routeIs('responses.index')">
+                        {{ __('Responses') }}
                     </x-nav-link>
                     <x-nav-link :href="route('carousel.index')" :active="request()->routeIs('carousel.index')">
                         {{ __('Image Carousel') }}
