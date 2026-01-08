@@ -19,12 +19,6 @@ class Aspiration extends Model
         'admin_response',
     ];
 
-    // relasi ke admin response 
-    public function responses()
-    {
-        return $this->morphMany(AdminResponse::class, 'respondable');
-    }
-
     protected $casts = [
         'is_anonymous' => 'boolean',
     ];

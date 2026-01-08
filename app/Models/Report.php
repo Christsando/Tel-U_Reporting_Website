@@ -11,12 +11,6 @@ class Report extends Model
 
     protected $guarded = ['id'];
 
-    // relasi ke admin response 
-    public function responses()
-    {
-        return $this->morphMany(AdminResponse::class, 'respondable');
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);

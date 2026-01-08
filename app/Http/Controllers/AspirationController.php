@@ -51,7 +51,7 @@ class AspirationController extends Controller
         ]);
 
         $validated['user_id'] = Auth::id();
-        $validated['status'] = 'PENDING';
+        $validated['status'] = 'submitted';
         $validated['is_anonymous'] = $request->has('is_anonymous');
 
         Aspiration::create($validated);

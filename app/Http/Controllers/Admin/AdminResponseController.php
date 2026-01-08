@@ -4,112 +4,119 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\AdminResponse;
-use App\Models\Aspiration;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\Report;
+use App\Models\Aspiration;
+use App\Models\LostFoundItem;
+use App\Models\AdminResponse;
 
 class AdminResponseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $reports = Report::select(
-            'id',
-            'title',
-            'description as message',
-            'status',
-            'created_at'
-        )->get()->map(function ($item) {
-            $item->source = 'report';
+        $reports = Report::with('user')->latest()->get()->map(function ($item) {
+            $item->source_type = 'report';
+            $item->display_title = 'Laporan Fasilitas';
+            $item->display_content = $item->description ?? $item->content;
+            $item->display_user = $item->user->name ?? 'User Hapus';
+            $item->display_email = $item->user->email ?? '-';
             return $item;
         });
 
-        $aspirations = Aspiration::select(
-            'id',
-            'title',
-            'content as message',
-            'status',
-            'created_at'
-        )->get()->map(function ($item) {
-            $item->source = 'aspiration';
+        $aspirations = Aspiration::with('user')->latest()->get()->map(function ($item) {
+            $item->source_type = 'aspiration';
+            $item->display_title = '[' . $item->topic . '] ' . $item->title;
+            $item->display_content = $item->content;
+            
+            if ($item->is_anonymous) {
+                $item->display_user = 'Disembunyikan (Anonim)';
+                $item->display_email = '-';
+            } else {
+                $item->display_user = $item->user->name ?? 'User Hapus';
+                $item->display_email = $item->user->email ?? '-';
+            }
             return $item;
         });
 
-        $items = collect()
-            ->concat($reports)
-            ->concat($aspirations);
+        $lostFounds = LostFoundItem::with('user')->latest()->get()->map(function ($item) {
+            $item->source_type = 'lost_found';
+            $typeLabel = ucfirst($item->type);
+            $item->display_title = "[$typeLabel] " . $item->title;
+            $item->display_content = $item->description;
+            $item->display_user = $item->user->name ?? 'User Hapus';
+            $item->display_email = $item->user->email ?? '-';
+            return $item;
+        });
 
-        return view('admin.responses.index', compact('items'));
-    }
+        $mergedData = $reports->concat($aspirations)->concat($lostFounds)->sortByDesc('created_at');
 
+        $page = $request->input('page', 1);
+        $perPage = 10;
+        $offset = ($page * $perPage) - $perPage;
 
-    public function create(Request $request)
-    {
-        return view('admin.responses.create', [
-            'respondable_type' => $request->type,
-            'respondable_id'   => $request->id,
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'type'   => 'required|in:report,aspiration',
-            'id'     => 'required|integer',
-            'status' => 'required|in:PENDING,ACCEPTED,ONPROGRESS,DONE,REJECTED',
-            'message' => 'required|string',
-        ]);
-
-        // tentukan data mana yang direspon
-        if ($request->type === 'report') {
-            $item = Report::findOrFail($request->id);
-        } else {
-            $item = Aspiration::findOrFail($request->id);
-        }
-
-        // update status di tabel ASLI (penting)
-        $item->update([
-            'status' => $request->status
-        ]);
-
-        AdminResponse::updateOrCreate(
-            [
-                'respondable_type' => get_class($item),
-                'respondable_id'   => $item->id,
-            ],
-            [
-                'admin_id'      => auth()->id(),
-                'message'       => $request->message,
-                'action_status' => $request->status,
-            ]
+        $paginatedItems = new LengthAwarePaginator(
+            $mergedData->slice($offset, $perPage)->values(),
+            $mergedData->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
         );
 
-
-        return redirect()
-            ->route('responses.index')
-            ->with('success', 'Respon admin berhasil disimpan');
+        return view('admin.responses.index', ['data' => $paginatedItems]);
     }
 
-    public function edit(AdminResponse $response)
+    public function show(Request $request, $id)
     {
-        return view('admin.responses.edit', compact('response'));
-    }
+        $type = $request->query('type', 'report');
 
-    public function update(Request $request, AdminResponse $response)
-    {
-        $response->update($request->all());
-        return redirect()->route('responses.index');
-    }
-
-    public function show($recognize)
-    {
-        [$type, $id] = explode('-', $recognize);
-
-        if ($type === 'report') {
-            $item = Report::findOrFail($id);
+        if ($type == 'aspiration') {
+            $data = Aspiration::with('user')->findOrFail($id);
+            $data->source_type = 'aspiration';
+        } elseif ($type == 'lost_found') {
+            $data = LostFoundItem::with('user')->findOrFail($id);
+            $data->source_type = 'lost_found';
         } else {
-            $item = Aspiration::findOrFail($id);
+            $data = Report::with('user')->findOrFail($id);
+            $data->source_type = 'report';
         }
 
-        return view('admin.responses.show', compact('item', 'type'));
+        return view('admin.responses.show', compact('data'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $type = $request->query('type', 'report');
+
+        $request->validate([
+            'status' => 'required',
+            'response' => 'nullable|string',
+        ]);
+
+        if ($type == 'aspiration') {
+            $item = Aspiration::findOrFail($id);
+            if ($request->filled('response')) {
+                $item->admin_response = $request->response;
+            }
+        } elseif ($type == 'lost_found') {
+            $item = LostFoundItem::findOrFail($id);
+        } else {
+            $item = Report::findOrFail($id);
+        }
+
+        $item->status = $request->status;
+        $item->save();
+
+        if ($type != 'aspiration' && $request->filled('response')) {
+             if (class_exists(AdminResponse::class)) {
+                 AdminResponse::create([
+                     'respondable_id' => $item->id,
+                     'respondable_type' => get_class($item),
+                     'message' => $request->response,
+                     'action_status' => $request->status,
+                 ]);
+             }
+        }
+
+        return redirect()->route('responses.index')->with('success', 'Status berhasil diperbarui!');
     }
 }

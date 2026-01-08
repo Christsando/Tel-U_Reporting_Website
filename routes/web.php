@@ -36,6 +36,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('points', AdminPointsController::class);
     Route::patch('/points/{points}/toggle', [AdminPointsController::class, 'toggleStatus'])->name('points.toggle');
     Route::patch('/carousel/{carousel}/toggle', [CarouselController::class, 'toggleStatus'])->name('admin.carousel.toggle');
+    Route::get('/reports/{report}', [AdminResponseController::class, 'show'])->name('admin.reports.show');
+    Route::put('/reports/{report}', [AdminResponseController::class, 'update'])->name('admin.reports.update');
+});
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::resource('responses', AdminResponseController::class);
 });
 
 require __DIR__.'/auth.php';
