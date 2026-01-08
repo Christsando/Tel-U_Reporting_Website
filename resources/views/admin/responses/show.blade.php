@@ -84,7 +84,7 @@
                                     <option value="RESOLVED" {{ $data->status == 'RESOLVED' ? 'selected' : '' }}>Selesai</option>
                                 @elseif($data->source_type == 'aspiration')
                                     <option value="submitted" {{ $data->status == 'submitted' ? 'selected' : '' }}>Submitted</option>
-                                    <option value="reviewed" {{ $data->status == 'Ditinjau Ulang' ? 'selected' : '' }}>Ditinjau Ulang</option>
+                                    <option value="reviewed" {{ $data->status == 'Ditinjau Ulang' ? 'selected' : '' }}>Ditinjau</option>
                                     <option value="accepted" {{ $data->status == 'Diterima' ? 'selected' : '' }}>Diterima</option>
                                     <option value="ditolak" {{ $data->status == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
                                 @else
