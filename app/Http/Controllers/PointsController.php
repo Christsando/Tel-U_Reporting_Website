@@ -19,21 +19,16 @@ class PointsController extends Controller
     {
         $user = auth()->user();
 
-        // Validasi stok
         if ($point->quantity <= 0) {
             return back()->with('error', 'Stok item habis');
         }
 
-        // Validasi point user
         if ($user->points < $point->points) {
             return back()->with('error', 'Point kamu tidak mencukupi');
         }
 
         DB::transaction(function () use ($user, $point) {
-            // Kurangi stok item
             $point->decrement('quantity', 1);
-
-            // Kurangi point user
             $user->decrement('points', $point->points);
         });
 

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LostFoundItemController;
 use App\Http\Controllers\AspirationController;
+use App\Http\Controllers\Admin\AdminPointsController;
 use App\Http\Controllers\Api\AdminResponseApiController;
 use App\Http\Controllers\Api\FacilityReportResponseController;
 use App\Http\Controllers\Api\AspirationResponseController;
@@ -15,4 +16,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/aspirations', [AspirationController::class, 'apiIndex']);
     Route::get('/aspirations/{id}', [AspirationController::class, 'apiShow']);
     Route::get('/lost-found-data', [LostFoundItemController::class, 'apiIndex']);
+    Route::get('/point-items',[AdminPointsController::class, 'apiIndex']);
 });

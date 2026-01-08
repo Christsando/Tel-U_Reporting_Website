@@ -25,11 +25,11 @@
         @endforeach
 
         {{-- button --}}
-        <button class="absolute left-2 top-1/2 bg-white px-2 py-1" @click="active = active > 0 ? active - 1 : 2">
+        <button class="absolute left-2 top-1/2 bg-white px-2 py-1" @click="active = active > 0 ? active - 1 : total - 1">
             ‹
         </button>
 
-        <button @click="active = active < 2 ? active + 1 : 0" class="absolute right-2 top-1/2 bg-white px-2 py-1">
+        <button @click="active = active < total - 1 ? active + 1 : 0" class="absolute right-2 top-1/2 bg-white px-2 py-1">
             ›
         </button>
     </div>

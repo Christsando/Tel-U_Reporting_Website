@@ -8,12 +8,14 @@ use App\Http\Controllers\Controller;
 
 class AdminPointsController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $point_items_exchange = Points::all();
-        return view ("admin.point-shop.index", compact('point_items_exchange'));
+        return view("admin.point-shop.index", compact('point_items_exchange'));
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
             'item_name' => 'required|string|max:255',
             'points' => 'required|integer|min:0',
@@ -31,7 +33,8 @@ class AdminPointsController extends Controller
             ->with('success', 'Item berhasil ditambahkan');
     }
 
-    public function update(Request $request, Points $point){
+    public function update(Request $request, Points $point)
+    {
         $data = $request->validate([
             'item_name' => 'required|string|max:255',
             'points' => 'required|integer|min:0',
@@ -53,10 +56,24 @@ class AdminPointsController extends Controller
 
     public function toggleStatus(Points $points)
     {
-        $points->update([
-            'status' => ! $points->status
-        ]);
-
+        $points->update(['status' => ! $points->status]);
         return back();
+    }
+
+    public function apiIndex()
+    {
+        $items = Points::select(
+            'id',
+            'item_name',
+            'points',
+            'quantity',
+            'status',
+            'created_at'
+        )->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $items
+        ]);
     }
 }
