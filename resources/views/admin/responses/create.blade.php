@@ -7,7 +7,6 @@
     <textarea name="message" required></textarea>
 
     <select name="action_status">
-        <option value="">-- Optional --</option>
         <option value="in_progress">In Progress</option>
         <option value="resolved">Resolved</option>
     </select>

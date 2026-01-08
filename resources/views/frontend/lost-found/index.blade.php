@@ -2,15 +2,27 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-              Barang Hilang & Ditemukan
+                Barang Hilang & Ditemukan
             </h2>
-            <a href="{{ route('lost-found.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg transition duration-300">
-                +  Posting Barang
+            <div class="flex gap-3">
+            <a href="{{ route('messages.index') }}" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded shadow flex items-center transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Kotak Masuk
             </a>
+            <a href="{{ route('lost-found.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow flex items-center transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Buat Laporan
+            </a>
+
+        </div>
         </div>
     </x-slot>
 
-    <div class="py-12 bg-gray-100 min-h-screen">
+    <div class="py-6 bg-gray-100 min-h-screen lg:min-h-[500px]">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
             @if(session('success'))
@@ -71,6 +83,7 @@
                         </p>
                     </div>
 
+                    @if (Auth::id()=== $item->user_id || Auth::user()->role ==='admin')
                     <div class="p-4 border-t bg-gray-50 flex justify-between items-center">
                         <a href="{{ route('lost-found.edit', $item->id) }}" class="text-yellow-600 hover:text-yellow-800 font-semibold text-sm flex items-center">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -86,6 +99,23 @@
                             </button>
                         </form>
                     </div>
+                   @else
+                    <div class="w-full">
+                        @auth
+                            <form action="{{ route('messages.store', $item->id) }}" method="POST" class="mt-2">
+                                @csrf
+                                <div class="flex gap-2">
+                                    <input type="text" name="message" placeholder="Tulis pesan..." class="w-full text-xs border rounded p-2" required>
+                                    <button type="submit" class="bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded hover:bg-blue-700">
+                                        Kirim
+                                    </button>
+                                </div>
+                            </form>
+                        @else
+                            <p class="text-xs text-center text-gray-500">Login untuk mengirim pesan.</p>
+                        @endauth
+                    </div>
+                @endif
                 </div>
                 @empty
                 <div class="col-span-full text-center py-12">
@@ -101,7 +131,7 @@
             <div class="mt-6">
                 {{ $items->links() }}
             </div>
-
         </div>
     </div>
+    <x-footer/>
 </x-app-layout>

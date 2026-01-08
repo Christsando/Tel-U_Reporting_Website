@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\LostFoundItem;
+use App\Models\Message;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
@@ -65,8 +66,8 @@ class LostFoundItemController extends Controller
      */
     public function show($id)
     {
-        $item = LostFoundItem::findOrFail($id);
-        return view('frontend.lost-found.show', compact('items'));
+        // $item = LostFoundItem::findOrFail($id);
+        // return view('frontend.lost-found.show', compact('items'));
     }
 
     /**
@@ -88,6 +89,9 @@ class LostFoundItemController extends Controller
             abort(403);
         }*/
         $lostFoundItem = LostFoundItem::findOrFail($id);
+        if ($lostFoundItem->user_id !== Auth::id()&&Auth::user()->role!=='admin' ){
+            abort(403,'tidak bisa edit');
+        }
         $validated = $request->validate([
             'title'       => 'required|string|max:100',
             'description' => 'required|string',
@@ -118,8 +122,14 @@ class LostFoundItemController extends Controller
         
 
         $lostFoundItem->update($validated);
+        if ($request->status === 'RESOLVED') {
+            Message::where('lost_found_item_id', $id)->delete();
 
-        return redirect()->route('lost-found.index')->with('success', 'Data Lost & Found berhasil diperbarui');
+            $pesan_tambahan = ' Dan riwayat percakapan telah dihapus otomatis.';
+        } else {
+            $pesan_tambahan = '';
+        }
+        return redirect()->route('lost-found.index')->with('success', 'Data Lost & Found berhasil diperbarui'. $pesan_tambahan);
     }
 
     /**
@@ -132,6 +142,11 @@ class LostFoundItemController extends Controller
             abort(403);
         }*/
         $lostFoundItem = LostFoundItem::findOrFail($id);
+        if ($lostFoundItem->user_id !== Auth::id()){
+            if(Auth::user()->role!=='admin' ){
+            abort(403,'tidak bisa hapus');
+        }
+        }
         if ($lostFoundItem-> image){
             Storage::disk('public')->delete($lostFoundItem-> image);
         }
